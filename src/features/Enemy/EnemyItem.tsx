@@ -113,7 +113,7 @@ export const EnemyItem = ({ id }: Props) => {
         if (num < 30 && num > 0) setMaxStress(num);
     };
 
-    const onSubmit = (values: Enemy, actions: { setSubmitting: (arg0: boolean) => void }) => {
+    const handleExport = (values: Enemy, actions: { setSubmitting: (arg0: boolean) => void }) => {
         values.hp = maxHP;
         values.stress = maxStress;
         values.features = currentFeatures;
@@ -139,7 +139,7 @@ export const EnemyItem = ({ id }: Props) => {
 
     return (
         <Box p={4} ref={mainRef} w="100%" border={'1px solid #7D46A4;'}>
-            <Formik initialValues={initialValues} onSubmit={onSubmit}>
+            <Formik initialValues={initialValues} onSubmit={handleExport}>
                 {props => (
                     <Form>
                         <Grid

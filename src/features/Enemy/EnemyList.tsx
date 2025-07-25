@@ -6,6 +6,7 @@ import { useEffect, type ChangeEvent } from 'react';
 import defaultEnemyList from '../../shared/defaultEnemyList.json';
 import type { Enemy } from './model/types/Enemy';
 import { AddIcon } from '@chakra-ui/icons';
+import { useToast } from '@chakra-ui/react';
 
 export function EnemyList() {
     const setDefaultEnemies = useEnemyStore(state => state.setDefaultEnemies);
@@ -13,6 +14,7 @@ export function EnemyList() {
     const defaultEnemies = useEnemyStore(state => state.defaultEnemies);
     const addEnemy = useEnemyStore(state => state.addEnemy);
     const importEnemy = useEnemyStore(state => state.importEnemy);
+    const toast = useToast();
     useEffect(() => {
         setDefaultEnemies(defaultEnemyList);
     }, []);
@@ -26,18 +28,32 @@ export function EnemyList() {
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
         const file = e.target.files[0];
-
         if (file) {
             const reader = new FileReader();
             reader.onload = e => {
                 if (!e.target) return;
-
                 try {
                     const text = JSON.parse(e.target.result as string);
                     const newEnemy: Enemy = text;
                     importEnemy(newEnemy);
+                    toast({
+                        title: 'Успех',
+                        description: 'Лист был импортирован.',
+                        status: 'success',
+                        duration: 5000,
+                        position: 'top-left',
+                        isClosable: true,
+                    });
                 } catch {
                     console.log('Неверный файл');
+                    toast({
+                        title: 'Неудача',
+                        description: 'Ошибка при попытке добавления файла.',
+                        status: 'error',
+                        duration: 5000,
+                        position: 'top-left',
+                        isClosable: true,
+                    });
                 }
             };
             reader.readAsText(file);
