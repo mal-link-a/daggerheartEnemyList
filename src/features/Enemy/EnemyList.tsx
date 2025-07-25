@@ -26,16 +26,11 @@ export function EnemyList() {
     };
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        console.log('1');
         if (!e.target.files) return;
         const file = e.target.files[0];
-        console.log('2');
         if (file) {
-            console.log('3');
             const reader = new FileReader();
-            console.log('4');
 
-            console.log(e.target.value);
             reader.onload = e => {
                 if (!e.target) return;
                 try {
