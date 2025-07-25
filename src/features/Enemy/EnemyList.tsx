@@ -26,10 +26,16 @@ export function EnemyList() {
     };
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        console.log('1');
         if (!e.target.files) return;
         const file = e.target.files[0];
+        console.log('2');
         if (file) {
+            console.log('3');
             const reader = new FileReader();
+            console.log('4');
+
+            console.log(e.target.value);
             reader.onload = e => {
                 if (!e.target) return;
                 try {
@@ -41,22 +47,22 @@ export function EnemyList() {
                         description: 'Лист был импортирован.',
                         status: 'success',
                         duration: 5000,
-                        position: 'top-left',
+                        position: 'top-right',
                         isClosable: true,
                     });
                 } catch {
-                    console.log('Неверный файл');
                     toast({
                         title: 'Неудача',
                         description: 'Ошибка при попытке добавления файла.',
                         status: 'error',
                         duration: 5000,
-                        position: 'top-left',
+                        position: 'top-right',
                         isClosable: true,
                     });
                 }
             };
             reader.readAsText(file);
+            e.target.value = '';
         }
     };
 
@@ -67,7 +73,7 @@ export function EnemyList() {
                     <HStack borderRadius={8} pl={4} pr={4} border="1px solid black" height={'40px'}>
                         <Text>Импортировать</Text> <AddIcon boxSize={4} />
                     </HStack>
-                    <Input display="none" onChange={handleFileChange} type="file" />
+                    <Input id="input-field" display="none" onChange={handleFileChange} type="file" />
                 </label>
                 <Select border="1px solid #000000ff" mb={8} onChange={handleAddEnemy} placeholder="Добавить карточку врага">
                     {defaultEnemies.map((item, index) => (
