@@ -117,7 +117,6 @@ export const EnemyItem = ({ id }: Props) => {
         values.hp = maxHP;
         values.stress = maxStress;
         values.features = currentFeatures;
-        console.log(values);
         actions.setSubmitting(false);
         const blob = new Blob([JSON.stringify(values)], { type: 'text/plain;charset=utf-8' });
         saveAs(blob, values.name);
