@@ -3,20 +3,18 @@ import { EnemyItem } from './EnemyItem';
 import { useEnemyStore } from './model/store';
 import { useEffect, type ChangeEvent } from 'react';
 
-import myData from '../../shared/defaultEnemyList.json';
+import defaultEnemyList from '../../shared/defaultEnemyList.json';
 import type { Enemy } from './model/types/Enemy';
 import { AddIcon } from '@chakra-ui/icons';
 
 export function EnemyList() {
-    const setEnemies = useEnemyStore(state => state.setEnemies);
     const setDefaultEnemies = useEnemyStore(state => state.setDefaultEnemies);
     const enemies = useEnemyStore(state => state.enemies);
     const defaultEnemies = useEnemyStore(state => state.defaultEnemies);
     const addEnemy = useEnemyStore(state => state.addEnemy);
     const importEnemy = useEnemyStore(state => state.importEnemy);
     useEffect(() => {
-        setEnemies(myData);
-        setDefaultEnemies(myData);
+        setDefaultEnemies(defaultEnemyList);
     }, []);
 
     const handleAddEnemy = (e: ChangeEvent<HTMLSelectElement>) => {
