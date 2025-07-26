@@ -137,7 +137,7 @@ export const EnemyItem = ({ id }: Props) => {
     }
 
     return (
-        <Box p={4} ref={mainRef} w="100%" border={'1px solid #7D46A4;'}>
+        <Box id={'enemyItem-' + id} p={4} ref={mainRef} w="1000px" border={'1px solid #7D46A4;'}>
             <Formik initialValues={initialValues} onSubmit={handleExport}>
                 {props => (
                     <Form>

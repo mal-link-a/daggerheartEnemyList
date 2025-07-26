@@ -7,6 +7,7 @@ import defaultEnemyList from '../../shared/defaultEnemyList.json';
 import type { Enemy } from './model/types/Enemy';
 import { AddIcon } from '@chakra-ui/icons';
 import { useToast } from '@chakra-ui/react';
+import { EnemyNavigation } from './UI/EnemyNavigation';
 
 export function EnemyList() {
     const setDefaultEnemies = useEnemyStore(state => state.setDefaultEnemies);
@@ -62,7 +63,7 @@ export function EnemyList() {
     };
 
     return (
-        <Box>
+        <Box w="1280px">
             <HStack alignItems="flex-start">
                 <label>
                     <HStack borderRadius={8} pl={4} pr={4} border="1px solid black" height={'40px'}>
@@ -79,11 +80,14 @@ export function EnemyList() {
                     ))}
                 </Select>
             </HStack>
-            <VStack as="main" w="1000px">
-                {enemies.map((item, id) => (
-                    <EnemyItem key={'Enemy' + item.name + id} id={id} />
-                ))}
-            </VStack>
+            <HStack alignItems="flex-start">
+                <EnemyNavigation />
+                <VStack as="main" w="1000px">
+                    {enemies.map((item, id) => (
+                        <EnemyItem key={'Enemy' + item.name + id} id={id} />
+                    ))}
+                </VStack>
+            </HStack>
         </Box>
     );
 }
