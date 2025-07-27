@@ -20,6 +20,7 @@ export interface Enemy {
 
 export interface Features {
     name: string;
+    tag: string;
     description: string;
 }
 

@@ -1,4 +1,4 @@
-import { VStack, Text, Box, Input, HStack, InputGroup, InputLeftAddon, Button, Grid } from '@chakra-ui/react';
+import { VStack, Text, Box, Input, HStack, InputGroup, InputLeftAddon, Button, Grid, Select } from '@chakra-ui/react';
 import { useEnemyStore } from './model/store';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { StatVisual } from '../../shared/components/StatVisual';
@@ -123,7 +123,7 @@ export const EnemyItem = ({ id }: Props) => {
     };
 
     const handleAddFeature = () => {
-        setFeatures([...currentFeatures, { name: '', description: '' }]);
+        setFeatures([...currentFeatures, { name: '', tag: '', description: '' }]);
     };
 
     function handleDeleteFeature(event: React.MouseEvent<HTMLButtonElement>) {
@@ -284,6 +284,11 @@ export const EnemyItem = ({ id }: Props) => {
                                         key={item.name + index}
                                     >
                                         <HStack gap={0}>
+                                            <Select w={'180px'} defaultValue={item.tag}>
+                                                <option value="Действие">Действие</option>
+                                                <option value="Реакция">Реакция</option>
+                                                <option value="Пассивно">Пассивно</option>
+                                            </Select>
                                             <Input
                                                 pl={4}
                                                 placeholder="Название"
