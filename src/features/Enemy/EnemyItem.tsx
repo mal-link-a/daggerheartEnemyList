@@ -284,7 +284,7 @@ export const EnemyItem = ({ id }: Props) => {
                                         key={item.name + index}
                                     >
                                         <HStack gap={0}>
-                                            <Select w={'180px'} defaultValue={item.tag}>
+                                            <Select borderRadius={0} border="1px solid black" w={'180px'} defaultValue={item.tag}>
                                                 <option value="Действие">Действие</option>
                                                 <option value="Реакция">Реакция</option>
                                                 <option value="Пассивно">Пассивно</option>
