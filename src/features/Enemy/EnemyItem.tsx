@@ -123,7 +123,32 @@ export const EnemyItem = ({ id }: Props) => {
     };
 
     const handleAddFeature = () => {
-        setFeatures([...currentFeatures, { name: '', tag: '', description: '' }]);
+        setFeatures(prev => [...prev, { name: '', tag: '', description: '' }]);
+    };
+
+    const handleEditFeaturesName = (e: ChangeEvent<HTMLInputElement>) => {
+        setFeatures(prev => {
+            const newData = [...prev];
+            const index = e.target.dataset.index;
+            newData[Number(index)].name = e.target.value;
+            return newData;
+        });
+    };
+    const handleEditFeaturesTag = (e: ChangeEvent<HTMLSelectElement>) => {
+        setFeatures(prev => {
+            const newData = [...prev];
+            const index = e.target.dataset.index;
+            newData[Number(index)].tag = e.target.value;
+            return newData;
+        });
+    };
+    const handleEditFeaturesDescription = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+        setFeatures(prev => {
+            const newData = [...prev];
+            const index = e.target.dataset.index;
+            newData[Number(index)].description = e.target.value;
+            return newData;
+        });
     };
 
     function handleDeleteFeature(event: React.MouseEvent<HTMLButtonElement>) {
@@ -284,16 +309,25 @@ export const EnemyItem = ({ id }: Props) => {
                                         key={item.name + index}
                                     >
                                         <HStack gap={0}>
-                                            <Select borderRadius={0} border="1px solid black" w={'180px'} defaultValue={item.tag}>
+                                            <Select
+                                                onChange={handleEditFeaturesTag}
+                                                data-index={index}
+                                                borderRadius={0}
+                                                border="1px solid black"
+                                                w={'180px'}
+                                                defaultValue={item.tag}
+                                            >
                                                 <option value="Действие">Действие</option>
                                                 <option value="Реакция">Реакция</option>
                                                 <option value="Пассивно">Пассивно</option>
                                             </Select>
                                             <Input
+                                                defaultValue={item.name}
+                                                onBlur={handleEditFeaturesName}
+                                                data-index={index}
                                                 pl={4}
                                                 placeholder="Название"
                                                 borderRadius={'0px'}
-                                                defaultValue={item.name}
                                                 color="#396c96ff"
                                             />
                                             <Button
@@ -309,6 +343,8 @@ export const EnemyItem = ({ id }: Props) => {
                                             </Button>
                                         </HStack>
                                         <TextareaAutoSize
+                                            onBlur={handleEditFeaturesDescription}
+                                            index={index}
                                             placeholder="Описание"
                                             borderRadius={'0px'}
                                             border="1px solid #000000ff"

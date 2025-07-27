@@ -3,17 +3,18 @@ import { useEffect, useRef } from 'react';
 
 interface Props {
     value?: string;
-    onChange?: () => void;
+    onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
     defaultValue?: string;
     fontSize?: string;
     id?: string;
     borderRadius?: string;
     border?: string;
     placeholder?: string;
+    index?: number;
 }
 
 //Попытки сделать простой textarea с авторазмером
-export const TextareaAutoSize = ({ value, onChange, defaultValue, fontSize, id, borderRadius, border, placeholder }: Props) => {
+export const TextareaAutoSize = ({ value, onBlur, defaultValue, fontSize, id, borderRadius, border, placeholder, index }: Props) => {
     const ref = useRef<HTMLTextAreaElement>(null);
 
     function textAreaAdjust(this: HTMLTextAreaElement) {
@@ -39,13 +40,14 @@ export const TextareaAutoSize = ({ value, onChange, defaultValue, fontSize, id, 
 
     return (
         <Textarea
+            data-index={index}
             placeholder={placeholder}
             border={border}
             borderRadius={borderRadius}
             id={id}
             defaultValue={defaultValue}
             value={value}
-            onChange={onChange}
+            onChange={onBlur}
             fontSize={fontSize}
             textAlign="center"
             ref={ref}
