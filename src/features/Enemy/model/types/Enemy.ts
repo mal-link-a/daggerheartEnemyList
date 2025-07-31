@@ -10,7 +10,7 @@ export interface Enemy {
     hp: number;
     weapon: string;
     dmg_type: string;
-    atk: number;
+    atk: string | number;
     atk_roll: string;
     difficulty: number;
     distance: string;

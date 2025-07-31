@@ -3,7 +3,7 @@ import { EnemyItem } from './EnemyItem';
 import { useEnemyStore } from './model/store';
 import { useEffect, type ChangeEvent } from 'react';
 
-import defaultEnemyList from '../../shared/defaultEnemyList.json';
+import defaultEnemyList from '../../shared/defaultEnemiesSmall.json';
 import type { Enemy } from './model/types/Enemy';
 import { AddIcon } from '@chakra-ui/icons';
 import { useToast } from '@chakra-ui/react';

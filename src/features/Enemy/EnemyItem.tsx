@@ -200,9 +200,9 @@ export const EnemyItem = ({ id }: Props) => {
                                 </CFieldSelect>
                                 <CFieldInput w="100%" h="100%" name="weapon" />
                                 <CFieldSelect name="distance" placeholder={'Выбери дистанцию'}>
-                                    <option value="Вплотную">Сверхблизко</option>
+                                    <option value="Вплотную">Вплотную</option>
+                                    <option value="Очень близко">Близко</option>
                                     <option value="Близко">Близко</option>
-                                    <option value="Средне">Близко</option>
                                     <option value="Далеко">Далеко</option>
                                     <option value="Очень далеко">Очень далеко</option>
                                 </CFieldSelect>
