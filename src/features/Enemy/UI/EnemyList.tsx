@@ -1,14 +1,16 @@
 import { Box, Text, HStack, Input, Select, VStack } from '@chakra-ui/react';
 import { EnemyItem } from './EnemyItem';
-import { useEnemyStore } from './model/store';
+import { useEnemyStore } from '../model/store';
 import { useEffect, type ChangeEvent } from 'react';
 
-import defaultEnemyList from '../../shared/defaultEnemiesSmall.json';
-import type { Enemy } from './model/types/Enemy';
+import defaultEnemyList from '../../../shared/defaultEnemiesSmall.json';
+import type { Enemy } from '../model/types/Enemy';
 import { AddIcon } from '@chakra-ui/icons';
 import { useToast } from '@chakra-ui/react';
-import { EnemyNavigation } from './UI/EnemyNavigation';
+import { EnemyNavigation } from './EnemyNavigation';
+import { RollDice } from '../../../shared/components/RollDice/ui/RollDice';
 
+//Основной лист, реализующий работу с сущностями врагов - просмотр, редактирование, экспорт в txt кастомный сущностей и их импорт
 export function EnemyList() {
     const setDefaultEnemies = useEnemyStore(state => state.setDefaultEnemies);
     const enemies = useEnemyStore(state => state.enemies);
@@ -20,18 +22,18 @@ export function EnemyList() {
         setDefaultEnemies(defaultEnemyList);
     }, []);
 
+    //Добавление врага из дефолтного массива
     const handleAddEnemy = (e: ChangeEvent<HTMLSelectElement>) => {
         const value = Number(e.target.value);
         e.target.selectedIndex = 0;
         addEnemy(value);
     };
-
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    //Импорт листа врага
+    const handleImport = (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-
             reader.onload = e => {
                 if (!e.target) return;
                 try {
@@ -69,7 +71,7 @@ export function EnemyList() {
                     <HStack borderRadius={8} pl={4} pr={4} border="1px solid black" height={'40px'}>
                         <Text>Импортировать</Text> <AddIcon boxSize={4} />
                     </HStack>
-                    <Input id="input-field" display="none" onChange={handleFileChange} type="file" />
+                    <Input id="input-field" display="none" onChange={handleImport} type="file" />
                 </label>
                 <Select border="1px solid #000000ff" mb={8} onChange={handleAddEnemy} placeholder="Добавить карточку врага">
                     {defaultEnemies.map((item, index) => (
@@ -81,7 +83,11 @@ export function EnemyList() {
                 </Select>
             </HStack>
             <HStack alignItems="flex-start">
-                <EnemyNavigation />
+                <VStack position="sticky" top="0px">
+                    <RollDice />
+                    <EnemyNavigation />
+                </VStack>
+
                 <VStack as="main" w="1000px">
                     {enemies.map((item, id) => (
                         <EnemyItem key={'Enemy' + item.name + id} id={id} />

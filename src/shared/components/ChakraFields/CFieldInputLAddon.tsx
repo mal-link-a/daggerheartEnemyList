@@ -1,22 +1,25 @@
 import { InputGroup, InputLeftAddon, Input } from '@chakra-ui/react';
-import { FastField } from 'formik';
+import { Field } from 'formik';
 import type { FieldMain } from './types/types';
 
 interface Props {
+    disabled?: boolean;
     name: string;
     addonWidth: string;
     addonLabel: string;
 }
 
-export const CFieldInputLAddon = ({ name, addonLabel, addonWidth }: Props) => {
+export const CFieldInputLAddon = ({ name, addonLabel, addonWidth, disabled }: Props) => {
     return (
-        <FastField name={name}>
+        <Field name={name}>
             {({ field }: FieldMain) => (
                 <InputGroup>
-                    <InputLeftAddon w={addonWidth}>{addonLabel}</InputLeftAddon>
-                    <Input textAlign="center" {...field} />
+                    <InputLeftAddon bg={'gray.200'} w={addonWidth}>
+                        {addonLabel}
+                    </InputLeftAddon>
+                    <Input disabled={disabled} textAlign="center" {...field} />
                 </InputGroup>
             )}
-        </FastField>
+        </Field>
     );
 };

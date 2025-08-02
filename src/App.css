@@ -41,3 +41,9 @@
 .read-the-docs {
     color: #888;
 }
+
+input,
+textarea,
+[contenteditable] {
+    caret-color: blue;
+}

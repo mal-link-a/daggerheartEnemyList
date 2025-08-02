@@ -1,8 +1,10 @@
 import { Input } from '@chakra-ui/react';
-import { FastField } from 'formik';
+import { Field } from 'formik';
 import type { FieldMain } from './types/types';
+import type { ChangeEvent } from 'react';
 
 interface Props {
+    disabled?: boolean;
     placeholder?: string;
     name: string;
     fontSize?: string;
@@ -11,24 +13,38 @@ interface Props {
     borderRadius?: string;
     borderLeftRadius?: string;
     borderRightRadius?: string;
+    onFocus?: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const CFieldInput = ({ name, fontSize, w, h, borderRadius, borderLeftRadius, borderRightRadius, placeholder }: Props) => {
+export const CFieldInput = ({
+    name,
+    fontSize,
+    w,
+    h,
+    borderRadius,
+    borderLeftRadius,
+    borderRightRadius,
+    placeholder,
+    onFocus,
+    disabled,
+}: Props) => {
     return (
-        <FastField name={name}>
+        <Field name={name}>
             {({ field }: FieldMain) => (
                 <Input
+                    textAlign={'center'}
+                    disabled={disabled}
                     w={w}
                     h={h}
                     fontSize={fontSize}
                     borderRadius={borderRadius}
                     borderLeftRadius={borderLeftRadius}
                     borderRightRadius={borderRightRadius}
-                    textAlign="center"
                     placeholder={placeholder}
+                    onFocus={onFocus}
                     {...field}
                 />
             )}
-        </FastField>
+        </Field>
     );
 };

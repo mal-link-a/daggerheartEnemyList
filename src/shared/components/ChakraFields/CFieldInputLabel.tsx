@@ -1,22 +1,23 @@
 import { Input } from '@chakra-ui/react';
-import { FastField } from 'formik';
+import { Field } from 'formik';
 import type { FieldMain } from './types/types';
 
 interface Props {
+    disabled: boolean;
     name: string;
     label: string;
     children?: React.ReactNode;
 }
 
-export const CFieldInputLabel = ({ name, label }: Props) => {
+export const CFieldInputLabel = ({ name, label, disabled }: Props) => {
     return (
-        <FastField name={name}>
+        <Field name={name}>
             {({ field }: FieldMain) => (
                 <label>
-                    <Input w="100px" textAlign="center" {...field} />
+                    <Input disabled={disabled} w="100px" textAlign="center" {...field} />
                     {label}
                 </label>
             )}
-        </FastField>
+        </Field>
     );
 };

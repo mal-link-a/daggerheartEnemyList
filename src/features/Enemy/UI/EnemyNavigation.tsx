@@ -1,11 +1,13 @@
 import { Box } from '@chakra-ui/react';
 import { useEnemyStore } from '../model/store';
 
+//Навигация по листам врагов.
+//В идеале с ростом приложения не забыть вывести id-ссылки на листы в некий файл роутинга.
 export const EnemyNavigation = () => {
     const enemies = useEnemyStore(state => state.enemies);
 
     return (
-        <Box w="280px" as="nav" position="sticky" top="20px">
+        <Box listStylePos={'inside'} w="280px" as="nav" top="20px" minH={'500px'}>
             <ol>
                 {enemies.map((item, index) => (
                     <li key={item.name + index}>

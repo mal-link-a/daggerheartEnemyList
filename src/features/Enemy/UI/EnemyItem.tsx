@@ -1,28 +1,31 @@
 import { VStack, Text, Box, Input, HStack, InputGroup, InputLeftAddon, Button, Grid, Select } from '@chakra-ui/react';
-import { useEnemyStore } from './model/store';
+import { useEnemyStore } from '../model/store';
 import { useRef, useState, type ChangeEvent } from 'react';
-import { StatVisual } from '../../shared/components/StatVisual';
-import { MinusIcon, AddIcon, CloseIcon, ArrowRightIcon, DeleteIcon } from '@chakra-ui/icons';
+import { StatVisual } from '../../../shared/components/StatVisual';
+import { MinusIcon, AddIcon, CloseIcon, ArrowRightIcon, DeleteIcon, UnlockIcon, LockIcon } from '@chakra-ui/icons';
 
 import { Form, Formik } from 'formik';
-import type { Enemy, Features } from './model/types/Enemy';
-import { CFieldInputLabel } from '../../shared/components/ChakraFields/CFieldInputLabel';
-import { CFieldInput } from '../../shared/components/ChakraFields/CFieldInput';
-import { CFieldSelect } from '../../shared/components/ChakraFields/CFieldSelect';
-import { CFieldInputLAddon } from '../../shared/components/ChakraFields/CFieldInputLAddon';
-import { CFieldTextarea } from '../../shared/components/ChakraFields/CFieldTextarea';
-import { TextareaAutoSize } from '../../shared/components/TextareaAutoSize/TextareaAutoSize';
+import type { Enemy, Features } from '../model/types/Enemy';
+import { CFieldInputLabel } from '../../../shared/components/ChakraFields/CFieldInputLabel';
+import { CFieldInput } from '../../../shared/components/ChakraFields/CFieldInput';
+import { CFieldSelect } from '../../../shared/components/ChakraFields/CFieldSelect';
+import { CFieldInputLAddon } from '../../../shared/components/ChakraFields/CFieldInputLAddon';
+import { TextareaAutoSize } from '../../../shared/components/TextareaAutoSize/TextareaAutoSize';
 import { saveAs } from 'file-saver';
+import { FeatureDescription } from './FeatureDescription';
+import { useBoundStore } from '../../../model/store';
 
 interface Props {
     id: number;
 }
 
 export const EnemyItem = ({ id }: Props) => {
+    const roll = useBoundStore(state => state.rollDices);
     const mainRef = useRef<HTMLDivElement>(null);
     const deleteThis = useEnemyStore(state => state.deleteEnemy);
-
     const enemy = useEnemyStore(state => state.enemies[id]);
+    const [locked, setLock] = useState<boolean>(false);
+
     const [stress, hp] = [enemy.stress, enemy.hp];
     const initialValues: Enemy = {
         name: enemy.name,
@@ -43,27 +46,52 @@ export const EnemyItem = ({ id }: Props) => {
         experience: enemy.experience,
         features: enemy.features,
     };
+    //ОПИСАНИЕ
+    const [currentDescription, setDescription] = useState<string>(enemy.description);
+    const handleChangeDescription = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        setDescription(e.target.value);
+    };
 
+    //АТАКА И УРОН ДЛЯ БРОСКОВ КУБИКОВ
+    const [currentAtk, setCurrentAtk] = useState<number | string>(enemy.atk);
+    const [currentAtkRoll, setCurrentAtkRoll] = useState<string>(enemy.atk_roll);
+    const handleChangeAtk = (e: ChangeEvent<HTMLInputElement>) => {
+        setCurrentAtk(e.target.value);
+    };
+    //Бросить кубик атаки
+    const handleRollAtk = () => {
+        //Точность положительная
+        if (typeof currentAtk == 'number' && currentAtk >= 0) roll('d20+' + currentAtk);
+        //Точность отрицательная
+        else if (typeof currentAtk == 'number') roll('d20' + currentAtk);
+        //Точность строка (1 сущность противника по всей corebook)
+        else if (typeof currentAtk == 'string') roll('d20+' + currentAtk.replaceAll(' ', ''));
+    };
+
+    const handleChangeAtkRoll = (e: ChangeEvent<HTMLInputElement>) => {
+        setCurrentAtkRoll(e.target.value);
+    };
+    //Бросить кубик на урон
+    const handleRollDmg = () => {
+        roll(currentAtkRoll.replaceAll(' ', ''));
+    };
+
+    //ЗДОРОВЬЕ МАКСИМАЛЬНОЕ И ТЕКУЩЕЕ
     const [currentHP, setCurrentHP] = useState<number>(hp);
     const [maxHP, setMaxHP] = useState<number>(hp);
-    const [currentStress, setCurrentStress] = useState<number>(stress);
-    const [maxStress, setMaxStress] = useState<number>(stress);
-    const [currentFeatures, setFeatures] = useState<Features[]>(initialValues.features);
-
+    //Изменяем текущее хп (инпут)
     const handleChangeHP = (e: ChangeEvent<HTMLInputElement>) => {
         const num = Number(e.target.value);
-        if (num >= 0 && maxHP == null) setCurrentHP(num);
-        else if (num >= 0 && maxHP != null && num < maxHP) setCurrentHP(num);
-        else if (maxHP != null && num > maxHP) setCurrentHP(maxHP);
+        if (num >= 0 && num <= maxHP) setCurrentHP(num);
+        else if (num > maxHP) setCurrentHP(maxHP);
         e.target.select();
     };
-    const handleFocus = (e: ChangeEvent<HTMLInputElement>) => {
-        e.target.select();
-    };
+    //+1 текущее хп (Кнопка)
     const handleIncHP = () => {
         const num = currentHP + 1;
         if (num > 0 && num <= maxHP) setCurrentHP(num);
     };
+    //-1 текущее хп (кнопка)
     const handleDecHP = () => {
         if (currentHP == null || maxHP == null) {
             return;
@@ -71,6 +99,7 @@ export const EnemyItem = ({ id }: Props) => {
         const num = currentHP - 1;
         if (num >= 0 && num < maxHP) setCurrentHP(num);
     };
+    //-2 текущее хп (кнопка)
     const handleDec2HP = () => {
         if (currentHP == null || maxHP == null) {
             return;
@@ -79,6 +108,7 @@ export const EnemyItem = ({ id }: Props) => {
         if (num >= 0 && num < maxHP) setCurrentHP(num);
         else setCurrentHP(0);
     };
+    //-3 текущее хп (кнопка)
     const handleDec3HP = () => {
         if (currentHP == null || maxHP == null) {
             return;
@@ -87,45 +117,45 @@ export const EnemyItem = ({ id }: Props) => {
         if (num >= 0 && num < maxHP) setCurrentHP(num);
         else setCurrentHP(0);
     };
+    //Меняем макс хп (инпут)
     const handleChangeMaxHP = (e: ChangeEvent<HTMLInputElement>) => {
         const num = Number(e.target.value);
         if (num < 38 && num > 0) setMaxHP(num);
         else if (num <= 0) setMaxHP(1);
     };
 
+    //СТРЕСС МАКСИМАЛЬНЫЙ И ТЕКУЩИЙ
+    const [currentStress, setCurrentStress] = useState<number>(stress);
+    const [maxStress, setMaxStress] = useState<number>(stress);
+    //Изменяем текущий стресс (инпут)
     const handleChangeStress = (e: ChangeEvent<HTMLInputElement>) => {
         const num = Number(e.target.value);
-        if (num < 30 && num > 0 && num < maxStress) setCurrentStress(num);
+        if (num > 0 && num < maxStress) setCurrentStress(num);
         else if (num > maxStress) setCurrentStress(maxStress);
     };
-
+    //+1 к текущему стрессу (кнопка)
     const handleIncStress = () => {
         const num = currentStress + 1;
-        if (num < 30 && num > 0 && num <= maxStress) setCurrentStress(num);
+        if (num > 0 && num <= maxStress) setCurrentStress(num);
     };
+    //-1 к текущему стрессу (кнопка)
     const handleDecStress = () => {
         const num = currentStress - 1;
-        if (num < 30 && num >= 0 && num < maxStress) setCurrentStress(num);
+        if (num >= 0 && num < maxStress) setCurrentStress(num);
     };
-
+    //Изменяем максимальный стресс (инпут)
     const handleChangeMaxStress = (e: ChangeEvent<HTMLInputElement>) => {
         const num = Number(e.target.value);
         if (num < 30 && num > 0) setMaxStress(num);
     };
 
-    const handleExport = (values: Enemy, actions: { setSubmitting: (arg0: boolean) => void }) => {
-        values.hp = maxHP;
-        values.stress = maxStress;
-        values.features = currentFeatures;
-        actions.setSubmitting(false);
-        const blob = new Blob([JSON.stringify(values)], { type: 'text/plain;charset=utf-8' });
-        saveAs(blob, values.name);
-    };
-
+    //ОСОБЕННОСТИ (FEATURES) СУЩНОСТИ
+    const [currentFeatures, setFeatures] = useState<Features[]>(initialValues.features);
+    //Добавление
     const handleAddFeature = () => {
         setFeatures(prev => [...prev, { name: '', tag: '', description: '' }]);
     };
-
+    //Редактирование имени особенности
     const handleEditFeaturesName = (e: ChangeEvent<HTMLInputElement>) => {
         setFeatures(prev => {
             const newData = [...prev];
@@ -134,6 +164,7 @@ export const EnemyItem = ({ id }: Props) => {
             return newData;
         });
     };
+    //Редактирование типа особенности
     const handleEditFeaturesTag = (e: ChangeEvent<HTMLSelectElement>) => {
         setFeatures(prev => {
             const newData = [...prev];
@@ -142,6 +173,7 @@ export const EnemyItem = ({ id }: Props) => {
             return newData;
         });
     };
+    //Редактирование описания особенности
     const handleEditFeaturesDescription = (e: React.FocusEvent<HTMLTextAreaElement>) => {
         setFeatures(prev => {
             const newData = [...prev];
@@ -150,19 +182,49 @@ export const EnemyItem = ({ id }: Props) => {
             return newData;
         });
     };
-
+    //Удаление особенности
     function handleDeleteFeature(event: React.MouseEvent<HTMLButtonElement>) {
         const index = Number(event.currentTarget.dataset.index);
         const updatedFeatures = currentFeatures.filter((_, i) => i !== index);
         setFeatures(updatedFeatures);
     }
 
+    //ОСТАЛЬНОЕ
+    //Удаление этого компонента
     function handleDeleteItem() {
         deleteThis(id);
     }
+    //Выбрать содержимое инпута при фокусе
+    const handleFocus = (e: ChangeEvent<HTMLInputElement>) => {
+        e.target.select();
+    };
+    //Экспорт в json
+    const handleExport = (values: Enemy, actions: { setSubmitting: (arg0: boolean) => void }) => {
+        values.hp = maxHP;
+        values.stress = maxStress;
+        values.description = currentDescription;
+        values.features = currentFeatures;
+        values.atk = currentAtk;
+        values.atk_roll = currentAtkRoll;
+        actions.setSubmitting(false);
+        const blob = new Blob([JSON.stringify(values)], { type: 'text/plain;charset=utf-8' });
+        saveAs(blob, values.name);
+    };
+    //Блокировка редактирования
+    const handleLockList = () => {
+        setLock(prev => !prev);
+    };
 
+    //В идеале с ростом приложения не забыть вывести id-ссылки на листы в некий файл роутинга.
     return (
-        <Box id={'enemyItem-' + id} p={4} ref={mainRef} w="1000px" border={'1px solid #7D46A4;'}>
+        <Box
+            boxShadow={'0px 0px 50px -3px hsla(240, 14%, 50%, 0.57)'}
+            id={'enemyItem-' + id}
+            p={4}
+            ref={mainRef}
+            w="1000px"
+            border={'1px solid #000000ff;'}
+        >
             <Formik initialValues={initialValues} onSubmit={handleExport}>
                 {props => (
                     <Form>
@@ -178,15 +240,15 @@ export const EnemyItem = ({ id }: Props) => {
                             fontWeight="bold"
                         >
                             <HStack gridArea="stats1" w="100%">
-                                <CFieldInputLabel name={'difficulty'} label={'Сложность'} />
-                                <CFieldInputLabel name={'tier'} label={'Тир'} />
+                                <CFieldInputLabel disabled={locked} name={'difficulty'} label={'Сложность'} />
+                                <CFieldInputLabel disabled={locked} name={'tier'} label={'Тир'} />
                             </HStack>
                             <Box gridArea="header">
-                                <CFieldInput placeholder="Имя" name="name" fontSize="24px" w="100%" h="100%" />
+                                <CFieldInput disabled={locked} placeholder="Имя" name="name" fontSize="24px" w="100%" h="100%" />
                             </Box>
 
                             <VStack gridArea="stats2">
-                                <CFieldSelect name="tag" placeholder={'Выбери тег'}>
+                                <CFieldSelect disabled={locked} name="tag" placeholder={'Выбери тег'}>
                                     <option value="Обычный">Обычный</option>
                                     <option value="Скрытный">Скрытный</option>
                                     <option value="Тяжеловес">Тяжеловес</option>
@@ -198,34 +260,77 @@ export const EnemyItem = ({ id }: Props) => {
                                     <option value="Социальный">Социальный</option>
                                     <option value="Орда">Орда</option>
                                 </CFieldSelect>
-                                <CFieldInput w="100%" h="100%" name="weapon" />
-                                <CFieldSelect name="distance" placeholder={'Выбери дистанцию'}>
+                                <CFieldInput disabled={locked} w="100%" h="100%" name="weapon" />
+                                <CFieldSelect disabled={locked} name="distance" placeholder={'Выбери дистанцию'}>
                                     <option value="Вплотную">Вплотную</option>
                                     <option value="Очень близко">Близко</option>
                                     <option value="Близко">Близко</option>
                                     <option value="Далеко">Далеко</option>
                                     <option value="Очень далеко">Очень далеко</option>
                                 </CFieldSelect>
-                                <CFieldSelect name="dmg_type" placeholder="Выбери тип урона">
+                                <CFieldSelect disabled={locked} name="dmg_type" placeholder="Выбери тип урона">
                                     <option value="Физический">Физический</option>
                                     <option value="Магический">Магический</option>
                                 </CFieldSelect>
-                                <CFieldInputLAddon name="atk" addonWidth="110px" addonLabel="Точность" />
-                                <CFieldInputLAddon name="atk_roll" addonWidth="110px" addonLabel="Ролл атаки" />
+                                {locked ? (
+                                    <Button colorScheme="blue" onClick={handleRollAtk} w="100%" h="100%">
+                                        Бросить кубики атаки
+                                    </Button>
+                                ) : (
+                                    <InputGroup>
+                                        <InputLeftAddon bg={'gray.200'} w={'120px'}>
+                                            {'Точность'}
+                                        </InputLeftAddon>
+                                        <Input textAlign="center" value={currentAtk} onInput={handleChangeAtk} />
+                                    </InputGroup>
+                                    // <CFieldInputLAddon disabled={locked} name="atk" addonWidth="110px" addonLabel="Точность" />
+                                )}
+                                {locked ? (
+                                    <Button colorScheme="blue" onClick={handleRollDmg} w="100%" h="100%">
+                                        Бросить кубики урона
+                                    </Button>
+                                ) : (
+                                    <InputGroup>
+                                        <InputLeftAddon bg={'gray.200'} w={'120px'}>
+                                            {'Ролл урона'}
+                                        </InputLeftAddon>
+                                        <Input textAlign="center" value={currentAtkRoll} onInput={handleChangeAtkRoll} />
+                                    </InputGroup>
+                                    // <CFieldInputLAddon disabled={locked} name="atk_roll" addonWidth="110px" addonLabel="Ролл урона" />
+                                )}
                             </VStack>
                             <Box w="100%" gridArea={'description'}>
                                 <label>
-                                    Описание
-                                    <CFieldTextarea border={'1px solid #000000ff'} name="description" />
+                                    {locked ? (
+                                        <Box textAlign={'right'} fontWeight={600}>
+                                            {currentDescription}
+                                        </Box>
+                                    ) : (
+                                        <>
+                                            Описание
+                                            <TextareaAutoSize
+                                                value={currentDescription}
+                                                border={'1px solid #000000ff'}
+                                                onChange={handleChangeDescription}
+                                            />
+                                        </>
+                                    )}
                                 </label>
                             </Box>
                             <VStack alignItems="flex-start" gridArea="stats3">
-                                <CFieldInputLAddon name={'motives_tactics'} addonWidth={'auto'} addonLabel={'Мотивы и тактика'} />
-                                <CFieldInputLAddon name={'experience'} addonWidth={'100px'} addonLabel={'Навыки'} />
+                                <CFieldInputLAddon
+                                    disabled={locked}
+                                    name={'motives_tactics'}
+                                    addonWidth={'auto'}
+                                    addonLabel={'Мотивы и тактика'}
+                                />
+                                <CFieldInputLAddon disabled={locked} name={'experience'} addonWidth={'100px'} addonLabel={'Навыки'} />
 
                                 <HStack>
                                     <InputGroup w="auto">
-                                        <InputLeftAddon w="100px">Здоровье</InputLeftAddon>
+                                        <InputLeftAddon bg={'gray.200'} w="100px">
+                                            Здоровье
+                                        </InputLeftAddon>
                                         <Input
                                             type="number"
                                             w="50px"
@@ -236,12 +341,14 @@ export const EnemyItem = ({ id }: Props) => {
                                             textAlign={'center'}
                                         />
                                         <Input
+                                            disabled={locked}
+                                            _disabled={{ bg: 'gray.300' }}
                                             name="hp"
                                             onFocus={handleFocus}
                                             onChange={handleChangeMaxHP}
                                             value={maxHP}
                                             type="number"
-                                            bgColor={'#DCDCDC'}
+                                            bgColor={'white'}
                                             width="50px"
                                             textAlign={'center'}
                                         />
@@ -255,11 +362,11 @@ export const EnemyItem = ({ id }: Props) => {
                                     <Button variant="outline" colorScheme="blue" onClick={handleDecHP} w="90px">
                                         Лёгкий
                                     </Button>
-                                    <CFieldInput name={'threshold1'} w="50px" borderRadius="24%" />
+                                    <CFieldInput disabled={locked} onFocus={handleFocus} name={'threshold1'} w="50px" borderRadius="24%" />
                                     <Button variant="outline" colorScheme="blue" onClick={handleDec2HP} w="90px">
-                                        Средний{' '}
+                                        Средний
                                     </Button>
-                                    <CFieldInput name={'threshold2'} w="50px" borderRadius="24%" />
+                                    <CFieldInput disabled={locked} onFocus={handleFocus} name={'threshold2'} w="50px" borderRadius="24%" />
                                     <Button variant="outline" colorScheme="blue" onClick={handleDec3HP} w="90px">
                                         Cложный
                                     </Button>
@@ -267,7 +374,9 @@ export const EnemyItem = ({ id }: Props) => {
                                 <StatVisual current={currentHP} max={maxHP} />
                                 <HStack>
                                     <InputGroup>
-                                        <InputLeftAddon w="100px">Стресс</InputLeftAddon>
+                                        <InputLeftAddon bg={'gray.200'} w="100px">
+                                            Стресс
+                                        </InputLeftAddon>
                                         <Input
                                             type="number"
                                             w="50px"
@@ -278,13 +387,15 @@ export const EnemyItem = ({ id }: Props) => {
                                             borderRightRadius={'0'}
                                         />
                                         <Input
+                                            disabled={locked}
+                                            _disabled={{ bg: 'gray.300' }}
                                             textAlign={'center'}
                                             name="hp"
                                             onFocus={handleFocus}
                                             onChange={handleChangeMaxStress}
                                             value={maxStress}
                                             type="number"
-                                            bgColor={'#DCDCDC'}
+                                            bgColor={'white'}
                                             width="50px"
                                         />
                                     </InputGroup>
@@ -310,6 +421,7 @@ export const EnemyItem = ({ id }: Props) => {
                                     >
                                         <HStack gap={0}>
                                             <Select
+                                                disabled={locked}
                                                 onChange={handleEditFeaturesTag}
                                                 data-index={index}
                                                 borderRadius={0}
@@ -322,6 +434,7 @@ export const EnemyItem = ({ id }: Props) => {
                                                 <option value="Пассивно">Пассивно</option>
                                             </Select>
                                             <Input
+                                                disabled={locked}
                                                 defaultValue={item.name}
                                                 onBlur={handleEditFeaturesName}
                                                 data-index={index}
@@ -331,6 +444,7 @@ export const EnemyItem = ({ id }: Props) => {
                                                 color="#396c96ff"
                                             />
                                             <Button
+                                                display={locked ? 'none' : 'block'}
                                                 data-index={index}
                                                 onClick={handleDeleteFeature}
                                                 borderRadius={'0px'}
@@ -342,17 +456,22 @@ export const EnemyItem = ({ id }: Props) => {
                                                 <CloseIcon />
                                             </Button>
                                         </HStack>
-                                        <TextareaAutoSize
-                                            onBlur={handleEditFeaturesDescription}
-                                            index={index}
-                                            placeholder="Описание"
-                                            borderRadius={'0px'}
-                                            border="1px solid #000000ff"
-                                            defaultValue={item.description}
-                                        />
+                                        {locked ? (
+                                            <FeatureDescription text={item.description} />
+                                        ) : (
+                                            <TextareaAutoSize
+                                                onBlur={handleEditFeaturesDescription}
+                                                index={index}
+                                                placeholder="Описание"
+                                                borderRadius={'0px'}
+                                                border="1px solid #000000ff"
+                                                defaultValue={item.description}
+                                            />
+                                        )}
                                     </Box>
                                 ))}
                                 <Button
+                                    display={locked ? 'none' : 'block'}
                                     borderRadius={'0px'}
                                     boxSizing="border-box"
                                     onClick={handleAddFeature}
@@ -366,10 +485,13 @@ export const EnemyItem = ({ id }: Props) => {
                                 </Button>
                             </Box>
                         </Grid>
+                        <Button gap={4} mr={20} mt={4} colorScheme="teal" onClick={handleLockList}>
+                            {locked ? <LockIcon /> : <UnlockIcon />}
+                        </Button>
                         <Button gap={4} mr={20} mt={4} colorScheme="teal" isLoading={props.isSubmitting} type="submit">
                             Экспорт <ArrowRightIcon />
                         </Button>
-                        <Button gap={4} onClick={handleDeleteItem} mt={4} colorScheme="red" isLoading={props.isSubmitting} type="button">
+                        <Button gap={4} onClick={handleDeleteItem} mt={4} colorScheme="red" type="button">
                             Удалить <DeleteIcon />
                         </Button>
                     </Form>
