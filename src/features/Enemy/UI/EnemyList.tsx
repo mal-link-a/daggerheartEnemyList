@@ -1,9 +1,10 @@
-import { Box, Text, HStack, Input, Select, VStack } from '@chakra-ui/react';
+import { Box, Text, HStack, Input, Select, VStack, Button } from '@chakra-ui/react';
 import { EnemyItem } from './EnemyItem';
 import { useEnemyStore } from '../model/store';
-import { useEffect, type ChangeEvent } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
 
 import defaultEnemyList from '../../../shared/defaultEnemiesSmall.json';
+import fullEnemyList from '../../../shared/defaultEnemies.json';
 import type { Enemy } from '../model/types/Enemy';
 import { AddIcon } from '@chakra-ui/icons';
 import { useToast } from '@chakra-ui/react';
@@ -18,6 +19,8 @@ export function EnemyList() {
     const addEnemy = useEnemyStore(state => state.addEnemy);
     const importEnemy = useEnemyStore(state => state.importEnemy);
     const toast = useToast();
+
+    const [isFullLoad, setFullLoad] = useState<boolean>(false);
     useEffect(() => {
         setDefaultEnemies(defaultEnemyList);
     }, []);
@@ -64,6 +67,12 @@ export function EnemyList() {
         }
     };
 
+    //Загрузить json на 100+ сущностей
+    const handleLoadFullData = () => {
+        setDefaultEnemies(fullEnemyList);
+        setFullLoad(true);
+    };
+
     return (
         <Box w="1280px">
             <HStack alignItems="flex-start">
@@ -73,6 +82,16 @@ export function EnemyList() {
                     </HStack>
                     <Input id="input-field" display="none" onChange={handleImport} type="file" />
                 </label>
+                <Button
+                    display={isFullLoad ? 'none' : 'block'}
+                    fontWeight={'400'}
+                    border="1px solid black"
+                    variant={'outline'}
+                    w={'560px'}
+                    onClick={handleLoadFullData}
+                >
+                    Загрузить полный список на английском
+                </Button>
                 <Select border="1px solid #000000ff" mb={8} onChange={handleAddEnemy} placeholder="Добавить карточку врага">
                     {defaultEnemies.map((item, index) => (
                         <option

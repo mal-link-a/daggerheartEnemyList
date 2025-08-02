@@ -33,7 +33,6 @@ export const FeatureDescription = ({ text }: Props) => {
                 data.push(`${value[i]} `);
                 parsed = '';
             } else if (value[i].search(regular) == 0) {
-                //data.push(parsed);
                 data.push(`${parsed}`);
                 data.push(`${value[i]} `);
                 parsed = '';
@@ -43,7 +42,7 @@ export const FeatureDescription = ({ text }: Props) => {
         }
         if (roll.validate(parsed)) {
             data.push(
-                <Button key={'unique key prop last'} onClick={handleRoll} display={'contents'} color="blue">
+                <Button data-roll={parsed} key={'unique key prop last'} onClick={handleRoll} display={'contents'} color="blue">
                     {parsed}
                 </Button>,
             );
