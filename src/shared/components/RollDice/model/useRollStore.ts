@@ -1,6 +1,7 @@
 import Roll from 'roll';
+import { create } from 'zustand';
 
-export interface RollSlice {
+export interface RollState {
     dices: string;
     result: number;
     rolled: number[];
@@ -9,8 +10,8 @@ export interface RollSlice {
 }
 
 const roll = new Roll();
-//В доках нет типизации set
-export const createRollSlice = (set: any) => ({
+//В итоге дропнул идею создать слайсы с zustand, надо усиленно почитать доки
+export const useRollStore = create<RollState>()(set => ({
     result: 0,
     rolled: [],
     dices: '1d20',
@@ -25,4 +26,4 @@ export const createRollSlice = (set: any) => ({
         set(() => {
             return { dices: value.replaceAll(' ', '') };
         }),
-});
+}));

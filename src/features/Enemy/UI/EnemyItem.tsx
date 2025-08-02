@@ -13,14 +13,14 @@ import { CFieldInputLAddon } from '../../../shared/components/ChakraFields/CFiel
 import { TextareaAutoSize } from '../../../shared/components/TextareaAutoSize/TextareaAutoSize';
 import { saveAs } from 'file-saver';
 import { FeatureDescription } from './FeatureDescription';
-import { useBoundStore } from '../../../model/store';
+import { useRollStore } from '../../../shared/components/RollDice/model/useRollStore';
 
 interface Props {
     id: number;
 }
 
 export const EnemyItem = ({ id }: Props) => {
-    const roll = useBoundStore(state => state.rollDices);
+    const roll = useRollStore(state => state.rollDices);
     const mainRef = useRef<HTMLDivElement>(null);
     const deleteThis = useEnemyStore(state => state.deleteEnemy);
     const enemy = useEnemyStore(state => state.enemies[id]);

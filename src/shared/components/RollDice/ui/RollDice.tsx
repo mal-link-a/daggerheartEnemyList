@@ -1,14 +1,14 @@
 import { Button, Text, Input } from '@chakra-ui/react';
 import { VStack, HStack } from '@chakra-ui/react/stack';
 import { type ChangeEvent } from 'react';
-import { useBoundStore } from '../../../../model/store';
+import { useRollStore } from '../model/useRollStore';
 
 export const RollDice = () => {
-    const result = useBoundStore(state => state.result);
-    const rolled = useBoundStore(state => state.rolled);
-    const dices = useBoundStore(state => state.dices);
-    const setDices = useBoundStore(state => state.setDices);
-    const rollDices = useBoundStore(state => state.rollDices);
+    const result = useRollStore(state => state.result);
+    const rolled = useRollStore(state => state.rolled);
+    const dices = useRollStore(state => state.dices);
+    const setDices = useRollStore(state => state.setDices);
+    const rollDices = useRollStore(state => state.rollDices);
 
     const handleChangeDice = (e: ChangeEvent<HTMLInputElement>) => {
         setDices(e.target.value);

@@ -1,7 +1,7 @@
 import { Box, Button } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import Roll from 'roll';
-import { useBoundStore } from '../../../model/store';
+import { useRollStore } from '../../../shared/components/RollDice/model/useRollStore';
 
 interface Props {
     text: string;
@@ -9,7 +9,7 @@ interface Props {
 
 export const FeatureDescription = ({ text }: Props) => {
     const [description, setDescription] = useState<React.ReactNode[]>([]);
-    const rollDices = useBoundStore(state => state.rollDices);
+    const rollDices = useRollStore(state => state.rollDices);
     const roll = new Roll(); //Временное
 
     const handleRoll = (e: React.SyntheticEvent<HTMLButtonElement>) => {
