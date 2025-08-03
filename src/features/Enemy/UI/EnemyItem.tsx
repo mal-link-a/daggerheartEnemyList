@@ -92,7 +92,7 @@ export const EnemyItem = ({ id }: Props) => {
     const handleIncHP = () => {
         const num = currentHP + 1;
         if (num > 0 && num <= maxHP) setCurrentHP(num);
-        else if (num > maxHP) setCurrentStress(maxHP);
+        else if (num > maxHP) setCurrentHP(maxHP);
     };
     //-1 текущее хп (кнопка)
     const handleDecHP = () => {
@@ -101,7 +101,7 @@ export const EnemyItem = ({ id }: Props) => {
         }
         const num = currentHP - 1;
         if (num >= 0 && num < maxHP) setCurrentHP(num);
-        else if (num > maxHP) setCurrentStress(maxHP);
+        else if (num > maxHP) setCurrentHP(maxHP);
     };
     //-2 текущее хп (кнопка)
     const handleDec2HP = () => {
@@ -110,7 +110,7 @@ export const EnemyItem = ({ id }: Props) => {
         }
         const num = currentHP - 2;
         if (num >= 0 && num < maxHP) setCurrentHP(num);
-        else if (num > maxHP) setCurrentStress(maxHP);
+        else if (num > maxHP) setCurrentHP(maxHP);
         else setCurrentHP(0);
     };
     //-3 текущее хп (кнопка)
@@ -121,7 +121,7 @@ export const EnemyItem = ({ id }: Props) => {
         }
         const num = currentHP - 3;
         if (num >= 0 && num < maxHP) setCurrentHP(num);
-        else if (num > maxHP) setCurrentStress(maxHP);
+        else if (num > maxHP) setCurrentHP(maxHP);
         else setCurrentHP(0);
     };
     //Меняем макс хп (инпут)
@@ -137,7 +137,7 @@ export const EnemyItem = ({ id }: Props) => {
     //Изменяем текущий стресс (инпут)
     const handleChangeStress = (e: ChangeEvent<HTMLInputElement>) => {
         const num = Number(e.target.value);
-        if (num > 0 && num < maxStress) setCurrentStress(num);
+        if (num > 0 && num <= maxStress) setCurrentStress(num);
         else if (num > maxStress) setCurrentStress(maxStress);
     };
     //+1 к текущему стрессу (кнопка)
@@ -205,7 +205,8 @@ export const EnemyItem = ({ id }: Props) => {
     }
     //Выбрать содержимое инпута при фокусе
     const handleFocus = (e: ChangeEvent<HTMLInputElement>) => {
-        e.target.select();
+        console.log('handleFocus');
+        if (!e.target.ariaSelected) e.target.select();
     };
     //Экспорт в json
     const handleExport = (values: Enemy, actions: { setSubmitting: (arg0: boolean) => void }) => {
