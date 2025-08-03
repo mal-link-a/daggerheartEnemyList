@@ -263,7 +263,7 @@ export const EnemyItem = ({ id }: Props) => {
                                 <CFieldInput disabled={locked} w="100%" h="100%" name="weapon" />
                                 <CFieldSelect disabled={locked} name="distance" placeholder={'Выбери дистанцию'}>
                                     <option value="Вплотную">Вплотную</option>
-                                    <option value="Очень близко">Близко</option>
+                                    <option value="Очень близко">Очень близко</option>
                                     <option value="Близко">Близко</option>
                                     <option value="Далеко">Далеко</option>
                                     <option value="Очень далеко">Очень далеко</option>
