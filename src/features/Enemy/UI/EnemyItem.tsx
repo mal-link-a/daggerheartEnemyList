@@ -61,11 +61,13 @@ export const EnemyItem = ({ id }: Props) => {
     //Бросить кубик атаки
     const handleRollAtk = () => {
         //Точность положительная
-        if (typeof currentAtk == 'number' && currentAtk >= 0) roll('d20+' + currentAtk);
+        const num = Number(currentAtk);
+
+        if (!isNaN(num) && num >= 0) roll('d20+' + currentAtk);
         //Точность отрицательная
-        else if (typeof currentAtk == 'number') roll('d20' + currentAtk);
+        else if (!isNaN(num)) roll('d20' + currentAtk);
         //Точность строка (1 сущность противника по всей corebook)
-        else if (typeof currentAtk == 'string') roll('d20+' + currentAtk.replaceAll(' ', ''));
+        else roll('d20+' + String(currentAtk).replaceAll(' ', ''));
     };
 
     const handleChangeAtkRoll = (e: ChangeEvent<HTMLInputElement>) => {
@@ -90,6 +92,7 @@ export const EnemyItem = ({ id }: Props) => {
     const handleIncHP = () => {
         const num = currentHP + 1;
         if (num > 0 && num <= maxHP) setCurrentHP(num);
+        else if (num > maxHP) setCurrentStress(maxHP);
     };
     //-1 текущее хп (кнопка)
     const handleDecHP = () => {
@@ -98,6 +101,7 @@ export const EnemyItem = ({ id }: Props) => {
         }
         const num = currentHP - 1;
         if (num >= 0 && num < maxHP) setCurrentHP(num);
+        else if (num > maxHP) setCurrentStress(maxHP);
     };
     //-2 текущее хп (кнопка)
     const handleDec2HP = () => {
@@ -106,15 +110,18 @@ export const EnemyItem = ({ id }: Props) => {
         }
         const num = currentHP - 2;
         if (num >= 0 && num < maxHP) setCurrentHP(num);
+        else if (num > maxHP) setCurrentStress(maxHP);
         else setCurrentHP(0);
     };
     //-3 текущее хп (кнопка)
     const handleDec3HP = () => {
+        //Странные проверки, нужны ли сейчас?
         if (currentHP == null || maxHP == null) {
             return;
         }
         const num = currentHP - 3;
         if (num >= 0 && num < maxHP) setCurrentHP(num);
+        else if (num > maxHP) setCurrentStress(maxHP);
         else setCurrentHP(0);
     };
     //Меняем макс хп (инпут)
@@ -137,11 +144,13 @@ export const EnemyItem = ({ id }: Props) => {
     const handleIncStress = () => {
         const num = currentStress + 1;
         if (num > 0 && num <= maxStress) setCurrentStress(num);
+        if (num > maxStress) setCurrentStress(maxStress);
     };
     //-1 к текущему стрессу (кнопка)
     const handleDecStress = () => {
         const num = currentStress - 1;
         if (num >= 0 && num < maxStress) setCurrentStress(num);
+        if (num > maxStress) setCurrentStress(maxStress);
     };
     //Изменяем максимальный стресс (инпут)
     const handleChangeMaxStress = (e: ChangeEvent<HTMLInputElement>) => {
@@ -279,7 +288,7 @@ export const EnemyItem = ({ id }: Props) => {
                                 ) : (
                                     <InputGroup>
                                         <InputLeftAddon bg={'gray.200'} w={'120px'}>
-                                            {'Точность'}
+                                            Атака
                                         </InputLeftAddon>
                                         <Input textAlign="center" value={currentAtk} onInput={handleChangeAtk} />
                                     </InputGroup>
@@ -296,7 +305,6 @@ export const EnemyItem = ({ id }: Props) => {
                                         </InputLeftAddon>
                                         <Input textAlign="center" value={currentAtkRoll} onInput={handleChangeAtkRoll} />
                                     </InputGroup>
-                                    // <CFieldInputLAddon disabled={locked} name="atk_roll" addonWidth="110px" addonLabel="Ролл урона" />
                                 )}
                             </VStack>
                             <Box w="100%" gridArea={'description'}>
@@ -324,7 +332,7 @@ export const EnemyItem = ({ id }: Props) => {
                                     addonWidth={'auto'}
                                     addonLabel={'Мотивы и тактика'}
                                 />
-                                <CFieldInputLAddon disabled={locked} name={'experience'} addonWidth={'100px'} addonLabel={'Навыки'} />
+                                <CFieldInputLAddon disabled={locked} name={'experience'} addonWidth={'100px'} addonLabel={'Опыт'} />
 
                                 <HStack>
                                     <InputGroup w="auto">
