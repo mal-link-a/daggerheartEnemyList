@@ -47,3 +47,11 @@ textarea,
 [contenteditable] {
     caret-color: blue;
 }
+::-webkit-scrollbar {
+    width: 7px;
+    background-color: #a7abc0;
+    box-shadow: 5px 5px 5px -5px rgba(34, 60, 80, 0.2) inset;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #272479;
+}

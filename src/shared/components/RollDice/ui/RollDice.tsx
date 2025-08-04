@@ -18,7 +18,7 @@ export const RollDice = () => {
     };
 
     return (
-        <VStack boxShadow={'0px 0px 50px -3px hsla(240, 14%, 50%, 0.57)'} border="1px solid black" p={2} w="280px">
+        <VStack overflow="visible" w="280px" boxShadow={'0px 0px 50px -3px hsla(240, 14%, 50%, 0.57)'} border="1px solid black" p={2}>
             <HStack>
                 <Text>Кубики</Text>
                 <Button colorScheme="teal" onClick={handleRoll}>

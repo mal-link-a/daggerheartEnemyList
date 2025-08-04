@@ -3,6 +3,8 @@ import { useEnemyStore } from '../model/store';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { StatVisual } from '../../../shared/components/StatVisual';
 import { MinusIcon, AddIcon, CloseIcon, ArrowRightIcon, DeleteIcon, UnlockIcon, LockIcon } from '@chakra-ui/icons';
+import useSound from 'use-sound';
+import kindFile from '../../../assets/metal-pipe.mp3'; // Путь к вашему аудиофайлу
 
 import { Form, Formik } from 'formik';
 import type { Enemy, Features } from '../model/types/Enemy';
@@ -25,6 +27,7 @@ export const EnemyItem = ({ id }: Props) => {
     const deleteThis = useEnemyStore(state => state.deleteEnemy);
     const enemy = useEnemyStore(state => state.enemies[id]);
     const [locked, setLock] = useState<boolean>(false);
+    const [playSound] = useSound(kindFile);
 
     const [stress, hp] = [enemy.stress, enemy.hp];
     const initialValues: Enemy = {
@@ -225,6 +228,15 @@ export const EnemyItem = ({ id }: Props) => {
         setLock(prev => !prev);
     };
 
+    const validate = (values: Enemy) => {
+        const errors: { [key: string]: string } = {};
+        if (!values.name) {
+            playSound();
+            errors.name = 'Для экспорта необходимо имя';
+        }
+        return errors;
+    };
+
     //В идеале с ростом приложения не забыть вывести id-ссылки на листы в некий файл роутинга.
     return (
         <Box
@@ -235,7 +247,13 @@ export const EnemyItem = ({ id }: Props) => {
             w="1000px"
             border={'1px solid #000000ff;'}
         >
-            <Formik initialValues={initialValues} onSubmit={handleExport}>
+            <Formik
+                initialValues={initialValues}
+                onSubmit={handleExport}
+                validateOnChange={false}
+                validateOnBlur={false}
+                validate={validate}
+            >
                 {props => (
                     <Form>
                         <Grid
@@ -255,6 +273,24 @@ export const EnemyItem = ({ id }: Props) => {
                             </HStack>
                             <Box gridArea="header">
                                 <CFieldInput disabled={locked} placeholder="Имя" name="name" fontSize="24px" w="100%" h="100%" />
+                                {props.errors.name ? (
+                                    <Text
+                                        zIndex={9000}
+                                        top="50%"
+                                        left="50%"
+                                        mr="50%"
+                                        transform={'translate(-50%, -50%)'}
+                                        position="absolute"
+                                        color={'black'}
+                                        fontSize={96}
+                                        fontWeight={900}
+                                        textShadow={
+                                            '1px -1px 0 #767676, -1px 2px 1px #737272, -2px 4px 1px #767474, -3px 6px 1px #787777, -4px 8px 1px #7b7a7a, -5px 10px 1px #7f7d7d, -6px 12px 1px #828181, -7px 14px 1px #868585, -8px 16px 1px #8b8a89, -9px 18px 1px #8f8e8d, -10px 20px 1px #949392, -11px 22px 1px #999897, -12px 24px 1px #9e9c9c, -13px 26px 1px #a3a1a1, -14px 28px 1px #a8a6a6, -15px 30px 1px #adabab, -16px 32px 1px #b2b1b0, -17px 34px 1px #b7b6b5, -18px 36px 1px #bcbbba, -19px 38px 1px #c1bfbf, -20px 40px 1px #c6c4c4, -21px 42px 1px #cbc9c8, -22px 44px 1px #cfcdcd, -23px 46px 1px #d4d2d1, -24px 48px 1px #d8d6d5, -25px 50px 1px #dbdad9, -26px 52px 1px #dfdddc, -27px 54px 1px #e2e0df, -28px 56px 1px #e4e3e2'
+                                        }
+                                    >
+                                        Для экспорта необходимо имя
+                                    </Text>
+                                ) : null}
                             </Box>
 
                             <VStack gridArea="stats2">
@@ -293,7 +329,6 @@ export const EnemyItem = ({ id }: Props) => {
                                         </InputLeftAddon>
                                         <Input textAlign="center" value={currentAtk} onInput={handleChangeAtk} />
                                     </InputGroup>
-                                    // <CFieldInputLAddon disabled={locked} name="atk" addonWidth="110px" addonLabel="Точность" />
                                 )}
                                 {locked ? (
                                     <Button colorScheme="blue" onClick={handleRollDmg} w="100%" h="100%">

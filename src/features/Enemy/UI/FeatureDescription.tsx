@@ -10,7 +10,7 @@ interface Props {
 export const FeatureDescription = ({ text }: Props) => {
     const [description, setDescription] = useState<React.ReactNode[]>([]);
     const rollDices = useRollStore(state => state.rollDices);
-    const roll = new Roll(); //Временное
+    const roll = new Roll(); //Только для валидации
 
     const handleRoll = (e: React.SyntheticEvent<HTMLButtonElement>) => {
         const dice = e.currentTarget.dataset.roll;
