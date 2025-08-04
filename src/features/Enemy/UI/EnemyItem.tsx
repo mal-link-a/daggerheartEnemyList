@@ -266,6 +266,7 @@ export const EnemyItem = ({ id }: Props) => {
                             gap="4"
                             color="blackAlpha.700"
                             fontWeight="bold"
+                            position="relative"
                         >
                             <HStack gridArea="stats1" w="100%">
                                 <CFieldInputLabel disabled={locked} name={'difficulty'} label={'Сложность'} />
