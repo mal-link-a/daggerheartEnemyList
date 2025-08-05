@@ -497,8 +497,9 @@ export const EnemyItem = ({ id }: Props) => {
                                                 w={'40px'}
                                                 variant="outline"
                                                 colorScheme="red"
+                                                p={0}
                                             >
-                                                <CloseIcon />
+                                                <CloseIcon boxSize={6} />
                                             </Button>
                                         </HStack>
                                         {locked ? (
